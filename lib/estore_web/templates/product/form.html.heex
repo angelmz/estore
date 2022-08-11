@@ -1,0 +1,63 @@
+<.form let={f} for={@changeset} action={@action}>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <%= label f, :handle %>
+  <%= text_input f, :handle %>
+  <%= error_tag f, :handle %>
+
+  <%= label f, :title %>
+  <%= text_input f, :title %>
+  <%= error_tag f, :title %>
+
+  <%= label f, :sku %>
+  <%= number_input f, :sku %>
+  <%= error_tag f, :sku %>
+
+  <%= label f, :body %>
+  <%= textarea f, :body %>
+  <%= error_tag f, :body %>
+
+  <%= label f, :vendor %>
+  <%= text_input f, :vendor %>
+  <%= error_tag f, :vendor %>
+
+  <%= label f, :category %>
+  <%= text_input f, :category %>
+  <%= error_tag f, :category %>
+
+  <%= label f, :published %>
+  <%= checkbox f, :published %>
+  <%= error_tag f, :published %>
+
+  <%= label f, :size %>
+  <%= text_input f, :size %>
+  <%= error_tag f, :size %>
+
+  <%= label f, :color %>
+  <%= text_input f, :color %>
+  <%= error_tag f, :color %>
+
+  <%= label f, :condition %>
+  <%= text_input f, :condition %>
+  <%= error_tag f, :condition %>
+
+  <%= label f, :inventory_qty %>
+  <%= number_input f, :inventory_qty %>
+  <%= error_tag f, :inventory_qty %>
+
+  <%= label f, :price %>
+  <%= number_input f, :price, step: "any" %>
+  <%= error_tag f, :price %>
+
+  <%= label f, :compare_at_price %>
+  <%= number_input f, :compare_at_price, step: "any" %>
+  <%= error_tag f, :compare_at_price %>
+
+  <div>
+    <%= submit "Save" %>
+  </div>
+</.form>

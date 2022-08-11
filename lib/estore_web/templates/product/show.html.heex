@@ -1,0 +1,73 @@
+<h1>Show Product</h1>
+
+<ul>
+
+  <li>
+    <strong>Handle:</strong>
+    <%= @product.handle %>
+  </li>
+
+  <li>
+    <strong>Title:</strong>
+    <%= @product.title %>
+  </li>
+
+  <li>
+    <strong>Sku:</strong>
+    <%= @product.sku %>
+  </li>
+
+  <li>
+    <strong>Body:</strong>
+    <%= @product.body %>
+  </li>
+
+  <li>
+    <strong>Vendor:</strong>
+    <%= @product.vendor %>
+  </li>
+
+  <li>
+    <strong>Category:</strong>
+    <%= @product.category %>
+  </li>
+
+  <li>
+    <strong>Published:</strong>
+    <%= @product.published %>
+  </li>
+
+  <li>
+    <strong>Size:</strong>
+    <%= @product.size %>
+  </li>
+
+  <li>
+    <strong>Color:</strong>
+    <%= @product.color %>
+  </li>
+
+  <li>
+    <strong>Condition:</strong>
+    <%= @product.condition %>
+  </li>
+
+  <li>
+    <strong>Inventory qty:</strong>
+    <%= @product.inventory_qty %>
+  </li>
+
+  <li>
+    <strong>Price:</strong>
+    <%= @product.price %>
+  </li>
+
+  <li>
+    <strong>Compare at price:</strong>
+    <%= @product.compare_at_price %>
+  </li>
+
+</ul>
+
+<span><%= link "Edit", to: Routes.product_path(@conn, :edit, @product) %></span> |
+<span><%= link "Back", to: Routes.product_path(@conn, :index) %></span>

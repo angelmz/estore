@@ -12,7 +12,7 @@ config :estore, Estore.Repo,
   username: "angel",
   password: "",
   hostname: "localhost",
-  database: "estore_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: "estore1_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: 10
 
