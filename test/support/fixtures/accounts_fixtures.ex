@@ -9,6 +9,8 @@ defmodule Estore.AccountsFixtures do
 
   def valid_user_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
+      full_name: "Angel Martinez",
+      role: "customer",
       email: unique_user_email(),
       password: valid_user_password()
     })
