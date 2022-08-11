@@ -16,8 +16,11 @@
 # Add datetime to reviews like getaway
 # 2. Run the seeds.
 alias Estore.Repo
+alias Estore.Accounts
 alias Estore.Accounts.User
-alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
+alias Estore.Inventory
+# alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
+
 
   ## User registration
 
@@ -36,68 +39,89 @@ alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
   #   |> Repo.insert()
   # end
 
-tag1 =
-  %Tag{title: "Fall"}
-  |> Repo.insert!
+create_tag1 =
+  Inventory.create_tag(%{title: "Fall"})
 
-subcategory1 =
-  %Subcategory{title: "men's apperal"}
-  |> Repo.insert!
+get_tag1 =
+  Inventory.get_tag!(1)
 
-image1 =
-  %Image {
+create_subcategory1 =
+  Inventory.create_subcategory(%{title: "men's apperal"})
+
+get_subcategory1 =
+  Inventory.get_subcategory!(1)
+
+create_image1 =
+  Inventory.create_image(%{
     image_src: "https://burst.shopifycdn.com/photos/mens-fall-fashion-jacket.jpg?width=925&exif=1&iptc=1/1",
     image_position: 1,
     image_alt_text: "Mens Fall Fashion Jacket"
-  }
-  |> Repo.insert!
+  })
 
-# user2 =
-#   %User{
-#     full_name: "Danica Sebastion",
-#     email: "danica@user.com",
-#     role: "customer",
-#     password: "Hello world1!",
-#     hashed_password: "$2b$12$Co5v5xpCAnFkBZDweag26.audmms4H2aO3rnDXdkgu8GBxwYcD8B2",
-#   }
-#   |> Repo.insert!
+get_image1 =
+  Inventory.get_image!(1)
 
-# review1 =
-#   %Review{
-#     rating: 5,
-#     comment: "Keeps me warm and it's stylish",
-#     user: user2,
-#     product: product1,
-#     inserted_at: ~N[2022-01-01 23:00:07]
-#   }
-#   |> Repo.insert!
+create_product1 =
+  Inventory.create_product(
+    %{
+      handle: "mens-fall-jacket",
+      title: "Men's Fall Jacket",
+      sku: 100000000000,
+      body: "Men's Fall Fashion Jacket ",
+      vendor: "stylegucci",
+      category: "apperal",
+      published: true,
+      size: "small",
+      color: "red",
+      condition: "new",
+      inventory_qty: 5,
+      price: Decimal.new("19.99"),
+      compare_at_price: Decimal.new("39.99"),
+      tags: [
+        create_tag1 # should really be, if tag/subcategory/image exists, don't create it. Should people even be able to create images
+      ],
+      subcategories: [
+        create_subcategory1
+      ],
+      images: [
+        create_image1 # Images shouldn't be many to many if we don't allow users to create categories, subcategories. how would we even organize that?
+                  # Do ineed to be logged in to use get_product?
+      ],
+    }
+  )
 
-product1 =
-  %Product{
-    handle: "mens-fall-jacket",
-    title: "Men's Fall Jacket",
-    sku: 100000000000,
-    body: "Mens Fall Fashion Jacket ",
-    vendor: "stylegucci",
-    category: "apperal",
-    published: true,
-    size: "small",
-    color: "red",
-    condition: "new",
-    inventory_qty: 5,
-    price: Decimal.new("19.99"),
-    compare_at_price: Decimal.new("39.99"),
-    tags: [
-      tag1
-    ],
-    subcategories: [
-      subcategory1
-    ],
-    images: [
-      image1
-    ],
-  }
-  |> Repo.insert!
+get_product1 =
+  Inventory.get_product!(1)
+
+create_product1_cheaper =
+  Inventory.create_product(
+    %{
+      handle: "mens-fall-jacket",
+      title: "Men's Fall Jacket",
+      sku: 100000000000,
+      body: "Men's Fall Fashion Jacket ",
+      vendor: "stylegucci",
+      category: "apperal",
+      published: true,
+      size: "small",
+      color: "red",
+      condition: "new",
+      inventory_qty: 5,
+      price: Decimal.new("18.99"),
+      compare_at_price: Decimal.new("39.99"),
+      tags: [
+        get_tag1 # should really be, if tag/subcategory/image exists, don't create it. Should people even be able to create images
+      ],
+      subcategories: [
+        get_subcategory1
+      ],
+      images: [
+        get_image1 # Images shouldn't be many to many if we don't allow users to create categories, subcategories. how would we even organize that?
+                  # Do ineed to be logged in to use get_product?
+      ],
+    }
+  )
+
 
 #
 # Users
@@ -131,29 +155,59 @@ Repo.insert(
     role: "seller",
     password: "Hello world1!",
     hashed_password: "$2b$12$Co5v5xpCAnFkBZDweag26.audmms4H2aO3rnDXdkgu8GBxwYcD8B2",
-    products: [product1]
+    products: [create_product1]
   }
 )
 
-user2 =
+Repo.insert(
   %User{
-    full_name: "Danica Sebastion",
-    email: "danica@user.com",
-    role: "customer",
+    full_name: "Adam Angel",
+    email: "adam@gmail.com",
+    role: "seller",
     password: "Hello world1!",
     hashed_password: "$2b$12$Co5v5xpCAnFkBZDweag26.audmms4H2aO3rnDXdkgu8GBxwYcD8B2",
+    products: [create_product1_cheaper]
   }
-  |> Repo.insert!
+)
 
-
-%Review{
-  rating: 3,
-  comment: "Keeps me warm and it's stylish",
-  user: user2,
-  product: product1,
-  inserted_at: ~N[2022-01-01 23:00:07]
+%User{
+  full_name: "Danica Sebastion",
+  email: "danica@user.com",
+  role: "customer",
+  password: "Hello world1!",
+  hashed_password: "$2b$12$Co5v5xpCAnFkBZDweag26.audmms4H2aO3rnDXdkgu8GBxwYcD8B2",
 }
 |> Repo.insert!
+
+get_user_danica =
+  Accounts.get_user_by_email("danica@user.com")
+
+# Figure this out like orders
+# Inventory.create_review(
+#   %{
+#     rating: 3,
+#     comment: "Keeps me warm and it's stylish",
+#     user: [get_user_danica],
+#     product: [get_product1],
+#     inserted_at: ~N[2022-01-01 23:00:07]
+#   }
+# )
+
+# review1 =
+#   %Review{
+#     rating: 5,
+#     comment: "Keeps me warm and it's stylish",
+#     user: user2,
+#     product: product1,
+#     inserted_at: ~N[2022-01-01 23:00:07]
+#   }
+#   |> Repo.insert!
+
+
+
+
+
+
 
 
 # it product just knows the user_id and reviews just
