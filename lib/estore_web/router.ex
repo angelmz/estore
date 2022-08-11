@@ -20,7 +20,7 @@ defmodule EstoreWeb.Router do
   scope "/", EstoreWeb do
     pipe_through :browser
 
-    # get "/", PageController, :index
+    get "/", PageController, :index
     resources "/products", ProductController
 
     # Only customer routes

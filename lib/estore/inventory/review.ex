@@ -5,9 +5,9 @@ defmodule Estore.Inventory.Review do
   schema "reviews" do
     field :comment, :string
     field :rating, :integer
-    field :product_id, :id
-    field :user_id, :id
 
+    belongs_to :product, Estore.Inventory.Product
+    belongs_to :user, Estore.Accounts.User
     timestamps()
   end
 
