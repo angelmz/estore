@@ -5,7 +5,9 @@ defmodule Estore.Repo.Migrations.CreateUsersAuthTables do
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
 
     create table(:users) do
+      add :full_name, :string, null: false
       add :email, :citext, null: false
+      add :roll, :string, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
       timestamps()

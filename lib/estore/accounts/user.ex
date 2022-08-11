@@ -3,7 +3,9 @@ defmodule Estore.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
+    field :full_name, :string
     field :email, :string
+    field :roll, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
@@ -30,7 +32,7 @@ defmodule Estore.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:full_name, :roll, :email, :password])
     |> validate_email()
     |> validate_password(opts)
   end
