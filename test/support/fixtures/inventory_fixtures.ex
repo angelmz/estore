@@ -29,4 +29,78 @@ defmodule Estore.InventoryFixtures do
 
     product
   end
+
+  @doc """
+  Generate a unique subcategory title.
+  """
+  def unique_subcategory_title, do: "some title#{System.unique_integer([:positive])}"
+
+  @doc """
+  Generate a subcategory.
+  """
+  def subcategory_fixture(attrs \\ %{}) do
+    {:ok, subcategory} =
+      attrs
+      |> Enum.into(%{
+        title: unique_subcategory_title()
+      })
+      |> Estore.Inventory.create_subcategory()
+
+    subcategory
+  end
+
+  @doc """
+  Generate a unique tag title.
+  """
+  def unique_tag_title, do: "some title#{System.unique_integer([:positive])}"
+
+  @doc """
+  Generate a tag.
+  """
+  def tag_fixture(attrs \\ %{}) do
+    {:ok, tag} =
+      attrs
+      |> Enum.into(%{
+        title: unique_tag_title()
+      })
+      |> Estore.Inventory.create_tag()
+
+    tag
+  end
+
+  @doc """
+  Generate a unique image image_src.
+  """
+  def unique_image_image_src, do: "some image_src#{System.unique_integer([:positive])}"
+
+  @doc """
+  Generate a image.
+  """
+  def image_fixture(attrs \\ %{}) do
+    {:ok, image} =
+      attrs
+      |> Enum.into(%{
+        image_alt_text: "some image_alt_text",
+        image_position: 42,
+        image_src: unique_image_image_src()
+      })
+      |> Estore.Inventory.create_image()
+
+    image
+  end
+
+  @doc """
+  Generate a review.
+  """
+  def review_fixture(attrs \\ %{}) do
+    {:ok, review} =
+      attrs
+      |> Enum.into(%{
+        comment: "some comment",
+        rating: 42
+      })
+      |> Estore.Inventory.create_review()
+
+    review
+  end
 end
