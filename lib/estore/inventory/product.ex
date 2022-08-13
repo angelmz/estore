@@ -22,7 +22,7 @@ defmodule Estore.Inventory.Product do
     many_to_many :tags, Tag, join_through: "product_tags", on_replace: :delete
     many_to_many :images, Image, join_through: "product_images", on_replace: :delete
 
-    has_many :reviews,Estore.Inventory.Review
+    has_many :reviews, Estore.Inventory.Review
 
     belongs_to :user, Estore.Accounts.User
 

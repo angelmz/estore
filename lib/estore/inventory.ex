@@ -6,7 +6,7 @@ defmodule Estore.Inventory do
   import Ecto.Query, warn: false
   alias Estore.Repo
 
-  alias Estore.Inventory.Product
+  alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
 
   @doc """
   Returns the list of products.
@@ -18,58 +18,23 @@ defmodule Estore.Inventory do
 
   """
   def list_products do
-    Repo.all(Product)
+    Product |> Repo.all |> Repo.preload([:subcategories, :tags])
   end
 
-  @doc """
-  Gets a single product.
+  # change ids to attrs
+  def get_product!(id) do
+    Product |> Repo.get(id) |> Repo.preload([:subcategories, :tags])
+  end
 
-  Raises `Ecto.NoResultsError` if the Product does not exist.
-
-  ## Examples
-
-      iex> get_product!(123)
-      %Product{}
-
-      iex> get_product!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_product!(id), do: Repo.get!(Product, id)
-
-  @doc """
-  Creates a product.
-
-  ## Examples
-
-      iex> create_product(%{field: value})
-      {:ok, %Product{}}
-
-      iex> create_product(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def create_product(attrs \\ %{}) do
     %Product{}
-    |> Product.changeset(attrs)
+    |> change_product(attrs)
     |> Repo.insert()
   end
 
-  @doc """
-  Updates a product.
-
-  ## Examples
-
-      iex> update_product(product, %{field: new_value})
-      {:ok, %Product{}}
-
-      iex> update_product(product, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
   def update_product(%Product{} = product, attrs) do
     product
-    |> Product.changeset(attrs)
+    |> change_product(attrs)
     |> Repo.update()
   end
 
@@ -99,10 +64,15 @@ defmodule Estore.Inventory do
 
   """
   def change_product(%Product{} = product, attrs \\ %{}) do
-    Product.changeset(product, attrs)
-  end
+    subcategories = list_subcategories_by_id(attrs["subcategory_ids"])
+    tags = list_tags_by_id(attrs["tags_ids"])
 
-  alias Estore.Inventory.Subcategory
+    product
+    |> Repo.preload([:subcategories, :tags])
+    |> Product.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:subcategories, subcategories)
+    |> Ecto.Changeset.put_assoc(:tags, tags)
+  end
 
   @doc """
   Returns the list of subcategories.
@@ -113,8 +83,15 @@ defmodule Estore.Inventory do
       [%Subcategory{}, ...]
 
   """
+
   def list_subcategories do
     Repo.all(Subcategory)
+  end
+
+  def list_subcategories_by_id(nil), do: []
+
+  def list_subcategories_by_id(subcategory_ids) do
+    Repo.all(from s in Subcategory, where: s.id in ^subcategory_ids)
   end
 
   @doc """
@@ -198,8 +175,6 @@ defmodule Estore.Inventory do
     Subcategory.changeset(subcategory, attrs)
   end
 
-  alias Estore.Inventory.Tag
-
   @doc """
   Returns the list of tags.
 
@@ -209,10 +184,16 @@ defmodule Estore.Inventory do
       [%Tag{}, ...]
 
   """
+
   def list_tags do
     Repo.all(Tag)
   end
 
+  def list_tags_by_id(nil), do: []
+
+  def list_tags_by_id(tag_ids) do
+    Repo.all(from t in Tag, where: t.id in ^tag_ids)
+  end
   @doc """
   Gets a single tag.
 
@@ -293,8 +274,6 @@ defmodule Estore.Inventory do
   def change_tag(%Tag{} = tag, attrs \\ %{}) do
     Tag.changeset(tag, attrs)
   end
-
-  alias Estore.Inventory.Image
 
   @doc """
   Returns the list of images.
@@ -389,8 +368,6 @@ defmodule Estore.Inventory do
   def change_image(%Image{} = image, attrs \\ %{}) do
     Image.changeset(image, attrs)
   end
-
-  alias Estore.Inventory.Review
 
   @doc """
   Returns the list of reviews.

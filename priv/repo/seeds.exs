@@ -19,7 +19,7 @@ alias Estore.Repo
 alias Estore.Accounts
 alias Estore.Accounts.User
 alias Estore.Inventory
-# alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
+alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
 
 
   ## User registration
@@ -38,6 +38,35 @@ alias Estore.Inventory
   #   |> User.registration_changeset(attrs)
   #   |> Repo.insert()
   # end
+
+  create_product1_cheaper =
+    Inventory.create_product(
+      %{
+        handle: "mens-fall-jacket",
+        title: "Women's Fall Jacket",
+        sku: 100000000001,
+        body: "Women's Fall Fashion Jacket ",
+        vendor: "stylegucci",
+        category: "apperal",
+        published: true,
+        size: "small",
+        color: "red",
+        condition: "new",
+        inventory_qty: 5,
+        price: Decimal.new("18.99"),
+        compare_at_price: Decimal.new("39.99"),
+        tags: [
+          Inventory.get_tag!(1)
+        ],
+        subcategories: [
+          Inventory.get_subcategory!(1)
+        ],
+        images: [
+          Inventory.get_image!(1)
+        ],
+      }
+    )
+
 
 create_tag1 =
   Inventory.create_tag(%{title: "Fall"})
@@ -61,34 +90,48 @@ create_image1 =
 get_image1 =
   Inventory.get_image!(1)
 
-create_product1 =
-  Inventory.create_product(
-    %{
-      handle: "mens-fall-jacket",
-      title: "Men's Fall Jacket",
-      sku: 100000000000,
-      body: "Men's Fall Fashion Jacket ",
-      vendor: "stylegucci",
-      category: "apperal",
-      published: true,
-      size: "small",
-      color: "red",
-      condition: "new",
-      inventory_qty: 5,
-      price: Decimal.new("19.99"),
-      compare_at_price: Decimal.new("39.99"),
-      tags: [
-        create_tag1 # should really be, if tag/subcategory/image exists, don't create it. Should people even be able to create images
-      ],
-      subcategories: [
-        create_subcategory1
-      ],
-      images: [
-        create_image1 # Images shouldn't be many to many if we don't allow users to create categories, subcategories. how would we even organize that?
-                  # Do ineed to be logged in to use get_product?
-      ],
-    }
-  )
+mp = %Product{}
+attrs =
+  %{
+    handle: "mens-fall-jacket",
+    title: "Men's Fall Jacket",
+    sku: 100000000000,
+    body: "Men's Fall Fashion Jacket ",
+    vendor: "stylegucci",
+    category: "apperal",
+    published: true,
+    size: "small",
+    color: "red",
+    condition: "new",
+    inventory_qty: 5,
+    price: Decimal.new("19.99"),
+    compare_at_price: Decimal.new("39.99"),
+  }
+
+Inventory.create_product(attrs)
+
+
+  def create_product(attrs \\ %{}) do
+    %Product{}
+    |> change_product(attrs)
+    |> Repo.insert()
+  end
+
+
+  product
+  |> Repo.preload([:subcategories, :tags])
+  |> Product.changeset(attrs)
+  |> Ecto.Changeset.put_assoc(:subcategories, subcategories)
+
+  params = %Product{} |> Product.changeset(attrs)
+
+
+  params |> Ecto.Changeset.put_assoc(:users, danica)
+
+
+
+
+
 
 get_product1 =
   Inventory.get_product!(1)
@@ -121,7 +164,26 @@ create_product1_cheaper =
       ],
     }
   )
+# product1 =
+#   %Product{
+#     handle: "mens-fall-jacket",
+#     title: "Men's Fall Jacket",
+#     sku: 100000000000,
+#     body: "Men's Fall Fashion Jacket ",
+#     vendor: "stylegucci",
+#     category: "apperal",
+#     published: true,
+#     size: "small",
+#     color: "red",
+#     condition: "new",
+#     inventory_qty: 5,
+#     price: Decimal.new("19.99"),
+#     compare_at_price: Decimal.new("39.99"),
+#   }
+# params = %{"tags" => ["Fall"]}
+# tags = Repo.all(from t in Tag, where: t.title in ^params["tags"])
 
+# product1 |> Repo.preload(:tags) |> Ecto.Changeset.put_assoc(:tags, tags)
 
 #
 # Users
@@ -179,9 +241,31 @@ Repo.insert(
 }
 |> Repo.insert!
 
-get_user_danica =
+danica =
   Accounts.get_user_by_email("danica@user.com")
 
+
+# attrs =
+  # %{
+  #   handle: "mens-fall-jacket",
+  #   title: "Men's Fall Jacket",
+  #   sku: 100000000000,
+  #   body: "Men's Fall Fashion Jacket ",
+  #   vendor: "stylegucci",
+  #   category: "apperal",
+  #   published: true,
+  #   size: "small",
+  #   color: "red",
+  #   condition: "new",
+  #   inventory_qty: 5,
+  #   price: Decimal.new("19.99"),
+  #   compare_at_price: Decimal.new("39.99"),
+  # }
+#
+%Product{}
+|> Product.changeset(attrs)
+|> Ecto.Changeset.put_assoc(:user, danica)
+|> Repo.insert!()
 # Figure this out like orders
 # Inventory.create_review(
 #   %{
