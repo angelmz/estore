@@ -1,7 +1,7 @@
 defmodule Estore.Inventory.Product do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Estore.Inventory.{Subcategory, Tag, Image}
+  alias Estore.Inventory.{Subcategory, Tag}
 
   schema "products" do
     field :body, :string
@@ -20,12 +20,11 @@ defmodule Estore.Inventory.Product do
 
     many_to_many :subcategories, Subcategory, join_through: "product_subcategories", on_replace: :delete
     many_to_many :tags, Tag, join_through: "product_tags", on_replace: :delete
-    many_to_many :images, Image, join_through: "product_images", on_replace: :delete
 
     has_many :reviews, Estore.Inventory.Review
+    has_many :images, Estore.Inventory.Image
 
     belongs_to :user, Estore.Accounts.User
-
 
     timestamps()
   end

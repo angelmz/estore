@@ -7,6 +7,9 @@ defmodule Estore.Inventory.Image do
     field :image_position, :integer
     field :image_src, :string
 
+    belongs_to :product, Estore.Inventory.Product
+    belongs_to :user, Estore.Accounts.User
+
     timestamps()
   end
 

@@ -72,7 +72,81 @@ defmodule Estore.Inventory do
     |> Product.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:subcategories, subcategories)
     |> Ecto.Changeset.put_assoc(:tags, tags)
-  end
+    #######^ Categories Example
+
+
+
+    # product will create tags
+    # Diff between shopify and amazon. Amazon has set subcategories, Shopify lets you do your own
+    # Images only belong to one user, so that has to be taken care of.
+    # Seller vs user roles.
+
+    # - def create_cart(attrs \\ %{}) do
+    #   -   %Cart{}
+    #   -   |> Cart.changeset(attrs)
+    #   + def create_cart(user_id) do
+    #   +   %Cart{user_id: user_uuid}
+    #   +   |> Cart.changeset(%{})
+    #       |> Repo.insert()
+    #   +   |> case do
+    #   +     {:ok, cart} -> {:ok, reload_cart(cart)}
+    #   +     {:error, changeset} -> {:error, changeset}
+    #   +   end
+    #     end
+
+    #     defp reload_cart(%Cart{} = cart), do: get_cart_by_user_uuid(cart.user_uuid)
+
+    #     def add_item_to_cart(%Cart{} = cart, %Catalog.Product{} = product) do
+    #       %CartItem{quantity: 1, price_when_carted: product.price}
+    #       |> CartItem.changeset(%{})
+    #       |> Ecto.Changeset.put_assoc(:cart, cart)
+    #       |> Ecto.Changeset.put_assoc(:product, product)
+    #       |> Repo.insert(
+    #         on_conflict: [inc: [quantity: 1]],
+    #         conflict_target: [:cart_id, :product_id]
+    #       )
+    #     end
+    end
+
+    # def create_product(user, subcategories, tags, images) do
+    #   %Product{user_id: user.id, subcategories: subcategories, tags: tags, images: images }
+    #   |> Product.changeset(%{})
+    #   |> Repo.insert()
+    # end
+
+
+  #   ### Orders Example
+  #   line_items =
+  #     Enum.map(cart.items, fn item ->
+  #       %{product_id: item.product_id, price: item.product.price, quantity: item.quantity}
+  #     end)
+
+  #   # Creating
+  #   tags =
+  #     Enum.map(tags, fn tag ->
+  #       %{title: tag.title}
+  #     end)
+
+
+  #   product =
+  #     Ecto.Changeset.change(%Product{},
+  #       user_id: user.id, # seller id
+  #       tags: tags
+  #       images: images
+  #       subcategories: subcategories
+  #     )
+
+  #   Ecto.Multi.new()
+  #   |> Ecto.Multi.insert(:order, order)
+  #   |> Ecto.Multi.run(:prune_cart, fn _repo, _changes ->
+  #     ShoppingCart.prune_cart_items(cart)
+  #   end)
+  #   |> Repo.transaction()
+  #   |> case do
+  #     {:ok, %{order: order}} -> {:ok, order}
+  #     {:error, name, value, _changes_so_far} -> {:error, {name, value}}
+  #   end
+  # end
 
   @doc """
   Returns the list of subcategories.
