@@ -1,18 +1,17 @@
-defmodule Estore.Inventory.Tag do
+defmodule Estore.Accounts.Role do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "tags" do
+  schema "roles" do
     field :title, :string
 
-    belongs_to :product, Estore.Inventory.Product
-    belongs_to :user, Estore.Accounts.User
+    has_many :users, Estore.Accounts.User
     timestamps()
   end
 
   @doc false
-  def changeset(tag, attrs) do
-    tag
+  def changeset(role, attrs) do
+    role
     |> cast(attrs, [:title])
     |> validate_required([:title])
     |> unique_constraint(:title)

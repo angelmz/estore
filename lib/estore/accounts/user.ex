@@ -5,11 +5,11 @@ defmodule Estore.Accounts.User do
   schema "users" do
     field :full_name, :string
     field :email, :string
-    field :role, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    belongs_to :role, Estore.Accounts.Role
     has_many :reviews, Estore.Inventory.Review
     has_many :products, Estore.Inventory.Product
 
@@ -35,7 +35,7 @@ defmodule Estore.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:full_name, :role, :email, :password])
+    |> cast(attrs, [:full_name, :email, :password])
     |> validate_email()
     |> validate_password(opts)
   end

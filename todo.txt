@@ -1,0 +1,11 @@
+# Need a Multi Transaction Function
+1. Create Product (no, images, tags)
+2. Create images
+4. Add images to products. 
+5. Create tags
+6. Add tags to products. 
+
+
+What if user doesn't want to add any tags or images? 
+What if he wants use some of his old photos? In this case,
+Images would be many to many, but they'd have to be created first?

@@ -6,7 +6,7 @@ defmodule Estore.Accounts do
   import Ecto.Query, warn: false
   alias Estore.Repo
 
-  alias Estore.Accounts.{User, UserToken, UserNotifier}
+  alias Estore.Accounts.{User, UserToken, UserNotifier, Role}
 
   ## Database getters
 
@@ -76,9 +76,15 @@ defmodule Estore.Accounts do
   """
   def register_user(attrs) do
     %User{}
-    |> User.registration_changeset(attrs)
+    |> change_user_registration(attrs)
     |> Repo.insert()
   end
+
+  # def create_product(attrs \\ %{}) do
+  #   %Product{}
+  #   |> change_product(attrs)
+  #   |> Repo.insert()
+  # end
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
@@ -90,7 +96,110 @@ defmodule Estore.Accounts do
 
   """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
-    User.registration_changeset(user, attrs, hash_password: false)
+    role = get_role!(attrs[:role_id])
+    # If it had been multiple roles, we would've preloaded them instead of getting them one by one.
+    # User.registration_changeset(user, attrs, hash_password: false)
+    user
+    |> User.registration_changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:role, role)
+  end
+
+  ## Roles
+
+
+  @doc """
+  Returns the list of roles.
+
+  ## Examples
+
+      iex> list_roles()
+      [%Role{}, ...]
+
+  """
+
+  def list_roles do
+    Repo.all(Role)
+  end
+
+  @doc """
+  Gets a single role.
+
+  Raises `Ecto.NoResultsError` if the Role does not exist.
+
+  ## Examples
+
+      iex> get_role!(123)
+      %Role{}
+
+      iex> get_role!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_role!(id), do: Repo.get!(Role, id)
+
+  @doc """
+  Creates a role.
+
+  ## Examples
+
+      iex> create_role(%{field: value})
+      {:ok, %Role{}}
+
+      iex> create_role(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_role(attrs \\ %{}) do
+    %Role{}
+    |> Role.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a role.
+
+  ## Examples
+
+      iex> update_role(role, %{field: new_value})
+      {:ok, %Role{}}
+
+      iex> update_role(role, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_role(%Role{} = role, attrs) do
+    role
+    |> Role.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a role.
+
+  ## Examples
+
+      iex> delete_role(role)
+      {:ok, %Role{}}
+
+      iex> delete_role(role)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_role(%Role{} = role) do
+    Repo.delete(role)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking role changes.
+
+  ## Examples
+
+      iex> change_role(role)
+      %Ecto.Changeset{data: %Role{}}
+
+  """
+  def change_role(%Role{} = role, attrs \\ %{}) do
+    Role.changeset(role, attrs)
   end
 
   ## Settings
