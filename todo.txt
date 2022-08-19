@@ -9,3 +9,12 @@
 What if user doesn't want to add any tags or images? 
 What if he wants use some of his old photos? In this case,
 Images would be many to many, but they'd have to be created first?
+ 
+Remember, forget about querying right now. That's front end stuff.
+put_assoc vs build_assoc vs cast_assoc
+The Ecto book had a weird way of updating records
+and {"input"=>variable} seems to be the best way to handle raw data.
+
+Book a room ASAP
+
+# Create or get images. Let's go with just create for now

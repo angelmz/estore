@@ -69,6 +69,7 @@ defmodule Estore.Inventory do
     user = Accounts.get_user!(attrs[:user_id])
     tags = attrs[:tags] # [%{title}]
     images = attrs[:images]
+    # return images and Map.or enum.put user_id into from user variable
 
     product
     |> Repo.preload([:subcategories])
