@@ -10,37 +10,6 @@ defmodule Estore.ShoppingCart do
   alias Estore.Inventory
   alias Estore.Accounts
 
-
-
-  @doc """
-  Returns the list of carts.
-
-  ## Examples
-
-      iex> list_carts()
-      [%Cart{}, ...]
-
-  """
-  def list_carts do
-    Repo.all(Cart)
-  end
-
-  @doc """
-  Gets a single cart.
-
-  Raises `Ecto.NoResultsError` if the Cart does not exist.
-
-  ## Examples
-
-      iex> get_cart!(123)
-      %Cart{}
-
-      iex> get_cart!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  # def get_cart!(id), do: Repo.get!(Cart, id)
-
   def get_cart_by_user_id(user_id) do
     Repo.one(
       from(c in Cart,
@@ -52,37 +21,8 @@ defmodule Estore.ShoppingCart do
       )
     )
   end
-
-  @doc """
-  Creates a cart.
-
-  ## Examples
-
-      iex> create_cart(%{field: value})
-      {:ok, %Cart{}}
-
-      iex> create_cart(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-
-  # attrs = {"user_id" => "1"}
-
-  # The Following functions have been tested and work
-  # current_user = Estore.Accounts.get_user!(5)
-  # cart = Estore.ShoppingCart.create_cart(current_user)
-  # product1 = Estore.Inventory.get_product!("1")
-  # product2 = Estore.Inventory.get_product!("2")
-  # cart1 = Estore.ShoppingCart.get_cart(1)
-  # Estore.ShoppingCart.add_item_to_cart(cart, product1)
-  # Estore.ShoppingCart.add_item_to_cart(cart, product2)
-  # ShoppingCart.total_cart_price(cart)
-
-
-
   # Tip: When structs are in parameters instead of attrs, it means use their get function.
   # def add_item_to_cart(%Cart{} = cart, %Inventory.Product{} = product) do
-
 
   def create_cart(%Accounts.User{} = user) do
     %Cart{}
@@ -96,6 +36,24 @@ defmodule Estore.ShoppingCart do
   end
 
   defp reload_cart(%Cart{} = cart), do: get_cart_by_user_id(cart.user_id)
+
+  def update_cart(%Cart{} = cart, attrs) do
+    changeset =
+      cart
+      |> Cart.changeset(attrs)
+      |> Ecto.Changeset.cast_assoc(:items, with: &CartItem.changeset/2)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.update(:cart, changeset)
+    |> Ecto.Multi.delete_all(:discarded_items, fn %{cart: cart} ->
+      from(i in CartItem, where: i.cart_id == ^cart.id and i.quantity == 0)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{cart: cart}} -> {:ok, cart}
+      {:error, :cart, changeset, _changes_so_far} -> {:error, changeset}
+    end
+  end
 
   def add_item_to_cart(%Cart{} = cart, %Inventory.Product{} = product) do
     %CartItem{quantity: 1, price_when_carted: product.price}
@@ -120,6 +78,11 @@ defmodule Estore.ShoppingCart do
     {:ok, reload_cart(cart)}
   end
 
+  def prune_cart_items(%Cart{} = cart) do
+    {_, _} = Repo.delete_all(from(i in CartItem, where: i.cart_id == ^cart.id))
+    {:ok, reload_cart(cart)}
+  end
+
   def total_item_price(%CartItem{} = item) do
     Decimal.mult(item.product.price, item.quantity)
   end
@@ -131,150 +94,126 @@ defmodule Estore.ShoppingCart do
       |> Decimal.add(acc)
     end)
   end
+#   @doc """
+#   Deletes a cart.
 
-  def update_cart(%Cart{} = cart, attrs) do
-    changeset =
-      cart
-      |> Cart.changeset(attrs)
-      |> Ecto.Changeset.cast_assoc(:items, with: &CartItem.changeset/2)
+#   ## Examples
 
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:cart, changeset)
-    |> Ecto.Multi.delete_all(:discarded_items, fn %{cart: cart} ->
-      from(i in CartItem, where: i.cart_id == ^cart.id and i.quantity == 0)
-    end)
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{cart: cart}} -> {:ok, cart}
-      {:error, :cart, changeset, _changes_so_far} -> {:error, changeset}
-    end
-  end
+#       iex> delete_cart(cart)
+#       {:ok, %Cart{}}
 
-  def prune_cart_items(%Cart{} = cart) do
-    {_, _} = Repo.delete_all(from(i in CartItem, where: i.cart_id == ^cart.id))
-    {:ok, reload_cart(cart)}
-  end
+#       iex> delete_cart(cart)
+#       {:error, %Ecto.Changeset{}}
 
-  @doc """
-  Deletes a cart.
+#   """
+#   def delete_cart(%Cart{} = cart) do
+#     Repo.delete(cart)
+#   end
 
-  ## Examples
+#   @doc """
+#   Returns an `%Ecto.Changeset{}` for tracking cart changes.
 
-      iex> delete_cart(cart)
-      {:ok, %Cart{}}
+#   ## Examples
 
-      iex> delete_cart(cart)
-      {:error, %Ecto.Changeset{}}
+#       iex> change_cart(cart)
+#       %Ecto.Changeset{data: %Cart{}}
 
-  """
-  def delete_cart(%Cart{} = cart) do
-    Repo.delete(cart)
-  end
+#   """
+#   def change_cart(%Cart{} = cart, attrs \\ %{}) do
+#     Cart.changeset(cart, attrs)
+#   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking cart changes.
+#   @doc """
+#   Returns the list of cart_items.
 
-  ## Examples
+#   ## Examples
 
-      iex> change_cart(cart)
-      %Ecto.Changeset{data: %Cart{}}
+#       iex> list_cart_items()
+#       [%CartItem{}, ...]
 
-  """
-  def change_cart(%Cart{} = cart, attrs \\ %{}) do
-    Cart.changeset(cart, attrs)
-  end
+#   """
+#   def list_cart_items do
+#     Repo.all(CartItem)
+#   end
 
-  @doc """
-  Returns the list of cart_items.
+#   @doc """
+#   Gets a single cart_item.
 
-  ## Examples
+#   Raises `Ecto.NoResultsError` if the Cart item does not exist.
 
-      iex> list_cart_items()
-      [%CartItem{}, ...]
+#   ## Examples
 
-  """
-  def list_cart_items do
-    Repo.all(CartItem)
-  end
+#       iex> get_cart_item!(123)
+#       %CartItem{}
 
-  @doc """
-  Gets a single cart_item.
+#       iex> get_cart_item!(456)
+#       ** (Ecto.NoResultsError)
 
-  Raises `Ecto.NoResultsError` if the Cart item does not exist.
+#   """
+#   def get_cart_item!(id), do: Repo.get!(CartItem, id)
 
-  ## Examples
+#   @doc """
+#   Creates a cart_item.
 
-      iex> get_cart_item!(123)
-      %CartItem{}
+#   ## Examples
 
-      iex> get_cart_item!(456)
-      ** (Ecto.NoResultsError)
+#       iex> create_cart_item(%{field: value})
+#       {:ok, %CartItem{}}
 
-  """
-  def get_cart_item!(id), do: Repo.get!(CartItem, id)
+#       iex> create_cart_item(%{field: bad_value})
+#       {:error, %Ecto.Changeset{}}
 
-  @doc """
-  Creates a cart_item.
+#   """
+#   def create_cart_item(attrs \\ %{}) do
+#     %CartItem{}
+#     |> CartItem.changeset(attrs)
+#     |> Repo.insert()
+#   end
 
-  ## Examples
+#   @doc """
+#   Updates a cart_item.
 
-      iex> create_cart_item(%{field: value})
-      {:ok, %CartItem{}}
+#   ## Examples
 
-      iex> create_cart_item(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+#       iex> update_cart_item(cart_item, %{field: new_value})
+#       {:ok, %CartItem{}}
 
-  """
-  def create_cart_item(attrs \\ %{}) do
-    %CartItem{}
-    |> CartItem.changeset(attrs)
-    |> Repo.insert()
-  end
+#       iex> update_cart_item(cart_item, %{field: bad_value})
+#       {:error, %Ecto.Changeset{}}
 
-  @doc """
-  Updates a cart_item.
+#   """
+#   def update_cart_item(%CartItem{} = cart_item, attrs) do
+#     cart_item
+#     |> CartItem.changeset(attrs)
+#     |> Repo.update()
+#   end
 
-  ## Examples
+#   @doc """
+#   Deletes a cart_item.
 
-      iex> update_cart_item(cart_item, %{field: new_value})
-      {:ok, %CartItem{}}
+#   ## Examples
 
-      iex> update_cart_item(cart_item, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+#       iex> delete_cart_item(cart_item)
+#       {:ok, %CartItem{}}
 
-  """
-  def update_cart_item(%CartItem{} = cart_item, attrs) do
-    cart_item
-    |> CartItem.changeset(attrs)
-    |> Repo.update()
-  end
+#       iex> delete_cart_item(cart_item)
+#       {:error, %Ecto.Changeset{}}
 
-  @doc """
-  Deletes a cart_item.
+#   """
+#   def delete_cart_item(%CartItem{} = cart_item) do
+#     Repo.delete(cart_item)
+#   end
 
-  ## Examples
+#   @doc """
+#   Returns an `%Ecto.Changeset{}` for tracking cart_item changes.
 
-      iex> delete_cart_item(cart_item)
-      {:ok, %CartItem{}}
+#   ## Examples
 
-      iex> delete_cart_item(cart_item)
-      {:error, %Ecto.Changeset{}}
+#       iex> change_cart_item(cart_item)
+#       %Ecto.Changeset{data: %CartItem{}}
 
-  """
-  def delete_cart_item(%CartItem{} = cart_item) do
-    Repo.delete(cart_item)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking cart_item changes.
-
-  ## Examples
-
-      iex> change_cart_item(cart_item)
-      %Ecto.Changeset{data: %CartItem{}}
-
-  """
-  def change_cart_item(%CartItem{} = cart_item, attrs \\ %{}) do
-    CartItem.changeset(cart_item, attrs)
-  end
+#   """
+#   def change_cart_item(%CartItem{} = cart_item, attrs \\ %{}) do
+#     CartItem.changeset(cart_item, attrs)
+#   end
 end

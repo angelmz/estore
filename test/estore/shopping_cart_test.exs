@@ -30,16 +30,17 @@ defmodule Estore.ShoppingCartTest do
       assert {:error, %Ecto.Changeset{}} = ShoppingCart.create_cart(@invalid_attrs)
     end
 
-    test "update_cart/2 with valid data updates the cart" do
+    # formely update_cart
+    test "add_item_to_cart/2 with valid data updates the cart" do
       cart = cart_fixture()
-      update_attrs = %{}
+      product = %{}
 
-      assert {:ok, %Cart{} = cart} = ShoppingCart.update_cart(cart, update_attrs)
+      assert {:ok, %Cart{} = cart} = ShoppingCart.add_item_to_cart(cart, product)
     end
 
-    test "update_cart/2 with invalid data returns error changeset" do
+    test "add_item_to_cart/2 with invalid data returns error changeset" do
       cart = cart_fixture()
-      assert {:error, %Ecto.Changeset{}} = ShoppingCart.update_cart(cart, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = ShoppingCart.add_item_to_cart(cart, @invalid_attrs)
       assert cart == ShoppingCart.get_cart!(cart.id)
     end
 

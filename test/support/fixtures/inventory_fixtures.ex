@@ -21,9 +21,10 @@ defmodule Estore.InventoryFixtures do
         price: "120.5",
         published: true,
         size: "some size",
-        sku: 42,
+        sku: 123456789123,
         title: "some title",
-        vendor: "some vendor"
+        vendor: "some vendor",
+        user_id: 1
       })
       |> Estore.Inventory.create_product()
 
@@ -97,7 +98,9 @@ defmodule Estore.InventoryFixtures do
       attrs
       |> Enum.into(%{
         comment: "some comment",
-        rating: 42
+        rating: 42,
+        product_id: 1,
+        user_id: 1,
       })
       |> Estore.Inventory.create_review()
 

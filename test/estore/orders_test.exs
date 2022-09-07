@@ -5,6 +5,7 @@ defmodule Estore.OrdersTest do
 
   describe "orders" do
     alias Estore.Orders.Order
+    alias Estore.ShoppingCart
 
     import Estore.OrdersFixtures
 
@@ -15,21 +16,24 @@ defmodule Estore.OrdersTest do
       assert Orders.list_orders() == [order]
     end
 
-    test "get_order!/1 returns the order with given id" do
+    test "get_order!/2 returns the order with given id" do
       order = order_fixture()
-      assert Orders.get_order!(order.id) == order
+      assert Orders.get_order!(order.id, order.user_id) == order
     end
 
-    test "create_order/1 with valid data creates a order" do
-      valid_attrs = %{total_price: "120.5"}
+    # test "complete_order/1 with valid data creates a order" do
+    #   cart = shopping_cart_fixture()
+    #   # valid_attrs = %ShoppingCart.Cart{total_price: "120.5"}
+    #   completed_order = order_fixture()
 
-      assert {:ok, %Order{} = order} = Orders.create_order(valid_attrs)
-      assert order.total_price == Decimal.new("120.5")
-    end
+    #   assert {:ok, %Order{} = order} = Orders.complete_order(cart)
+    #   # assert order.total_price == Decimal.new("120.5")
+    #   assert order = compå
+    # end
 
-    test "create_order/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Orders.create_order(@invalid_attrs)
-    end
+    # test "complete_order/1 with invalid data returns error changeset" do
+    #   assert {:error, %Ecto.Changeset{}} = Orders.complete_order(@invalid_attrs)
+    # end
 
     test "update_order/2 with valid data updates the order" do
       order = order_fixture()
@@ -42,13 +46,13 @@ defmodule Estore.OrdersTest do
     test "update_order/2 with invalid data returns error changeset" do
       order = order_fixture()
       assert {:error, %Ecto.Changeset{}} = Orders.update_order(order, @invalid_attrs)
-      assert order == Orders.get_order!(order.id)
+      assert order == Orders.get_order!(order.id, order.user_id)
     end
 
     test "delete_order/1 deletes the order" do
       order = order_fixture()
       assert {:ok, %Order{}} = Orders.delete_order(order)
-      assert_raise Ecto.NoResultsError, fn -> Orders.get_order!(order.id) end
+      assert_raise Ecto.NoResultsError, fn -> Orders.get_order!(order.id, order.user_id) end
     end
 
     test "change_order/1 returns a order changeset" do

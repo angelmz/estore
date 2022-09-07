@@ -1,3 +1,40 @@
+defmodule Test do
+  # The Following functions have been tested and work
+  alias Estore.Repo
+  alias Estore.Accounts
+  alias Estore.Accounts.{User}
+  alias Estore.Inventory
+  alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
+  alias Estore.Orders
+
+  @customer_attributes = %{}
+  @product1_attributes = %{}
+  @subcategory1_attributes = %{}
+  @review1_attributes = %{}
+
+
+  customer1 = Accounts.register_user(customer_attributes)
+  # seller1 = Accounts.register_user(seller_attributes)
+  # admin1 = Accounts.register_user(admin_attributes)
+
+  subcategory1 = Inventory.create_subcategory(subcategory1_attributes)
+  # A product should create tags, an image,
+  product1 = Inventory.create_product(product1_attributes)
+  # review1 = Inventory.create_review(review1_attributes)
+  current_user = Accounts.get_user_by_email(customer1.email)
+  # token = Accounts.get_user_by_session_token()
+  # Accounts.confirm_user(token)
+  # sign_in = Accounts.generate_user_session_token()
+
+
+
+  cart = ShoppingCart.create_cart(customer1)
+  ShoppingCart.add_item_to_cart(cart, product1)
+  # ShoppingCart.add_item_to_cart(cart, product2)
+  order = Orders.complete_order(car)
+end
+
+
 # Script for populating the database. You can run it as:
 #
 #     mix run priv/repo/seeds.exs
@@ -92,10 +129,13 @@ products = [
     tags: [
       %{
         title: "fall",
-
+        product_id: 1,
+        user_id: 1
       },
       %{
         title: "gucci",
+        product_id: 1,
+        user_id: 1
       },
     ],
     images: [
@@ -103,11 +143,15 @@ products = [
         image_src: "https://burst.shopifycdn.com/photos/mens-fall-fashion-jacket.jpg?width=925&exif=1&iptc=1/1",
         image_position: 1,
         image_alt_text: "Mens Fall Fashion Jacket",
+        product_id: 1,
+        user_id: 1
       },
       %{
         image_src: "https://facebook.com",
         image_position: 2,
         image_alt_text: "The Jacket",
+        product_id: 1,
+        user_id: 1
       }
     ],
     user_id: 1
@@ -130,9 +174,13 @@ products = [
     tags: [
       %{
         title: "fall",
+        product_id: 2,
+        user_id: 2
       },
       %{
         title: "gucci",
+        product_id: 2,
+        user_id: 2
       },
     ],
     images: [
@@ -140,11 +188,15 @@ products = [
         image_src: "https://youtube.com",
         image_position: 1,
         image_alt_text: "Mens Fall Fashion Jacket",
+        product_id: 2,
+        user_id: 2
       },
       %{
         image_src: "https://twitter.com",
         image_position: 2,
         image_alt_text: "The Jacket",
+        product_id: 2,
+        user_id: 2
       }
     ],
     user_id: 2
@@ -154,8 +206,9 @@ products = [
 # Tip: Don't worry about how user, tags, or images, fields will be filled out. That's controller/frontend issues. Just make sure the data gets to the proper tables.
 
 for product <- products do
-  {:ok, _} = Inventory.complete_product(product)
+  {:ok, _} = Inventory.create_product(product)
 end
+
 
 # # %Product{
 # #   handle: "chain-bracelet",

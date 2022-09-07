@@ -4,8 +4,8 @@ defmodule Estore.Orders.Order do
 
   schema "orders" do
     field :total_price, :decimal
-    field :user_id, :id
 
+    belongs_to :user, Estore.Accounts.User
     has_many :line_items, Estore.Orders.LineItem
     has_many :products, through: [:line_items, :product]
 

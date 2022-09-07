@@ -67,8 +67,11 @@ defmodule Estore.Inventory do
   def change_product(%Product{} = product, attrs \\ %{}) do
     subcategories = list_subcategories_by_id(attrs[:subcategory_ids])
     user = Accounts.get_user!(attrs[:user_id])
-    tags = attrs[:tags] # [%{title}]
-    images = attrs[:images]
+    # tags = attrs[:tags] # [%{title}]
+    # images = attrs[:images]
+
+
+    # create_tag(tags)
     # return images and Map.or enum.put user_id into from user variable
 
     product
@@ -76,10 +79,30 @@ defmodule Estore.Inventory do
     |> Product.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:subcategories, subcategories)
     |> Ecto.Changeset.put_assoc(:user, user)
-    |> Ecto.Changeset.put_assoc(:tags, tags)
-    |> Ecto.Changeset.put_assoc(:images, images)
+
+    # |> Ecto.Changeset.put_assoc(:tags, tags)
+    # |> Ecto.Changeset.put_assoc(:images, images)
   end
 
+  def complete_product(attrs \\ %{}) do
+    complete_product = create_product(attrs)
+
+    tags =
+      Enum.map(complete_product.tags, fn tag ->
+        %{title: tag.title, complete_product_id: complete_product.id, user_id: complete_product.user_id}
+      end)
+
+    images =
+      Enum.map(complete_product.images, fn image ->
+        %{title: image.title, complete_product_id: complete_product.id, user_id: complete_product.user_id}
+      end)
+
+    complete_product
+    |>Ecto.Changeset.put_assoc(:tags, [tags])
+    |>Ecto.Changeset.put_assoc(:images, [images])
+    |> Product.changeset(attrs)
+    |>Repo.insert()
+  end
   @doc """
   Returns the list of subcategories.
 
@@ -228,11 +251,16 @@ defmodule Estore.Inventory do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_tag(attrs \\ %{}) do
-    %Tag{}
-    |> Tag.changeset(attrs)
-    |> Repo.insert()
-  end
+
+  # create_tag(product = %Product{}, ){
+  #   product_id = product.id
+  #   user_id = product_user.id
+  # }
+  # def create_tag(%Product{} = product) do
+  #   %Tag{}
+  #   |> Tag.changeset(attrs)
+  #   |> Repo.insert()
+  # end
 
   @doc """
   Updates a tag.

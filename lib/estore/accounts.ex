@@ -80,12 +80,6 @@ defmodule Estore.Accounts do
     |> Repo.insert()
   end
 
-  # def create_product(attrs \\ %{}) do
-  #   %Product{}
-  #   |> change_product(attrs)
-  #   |> Repo.insert()
-  # end
-
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking user changes.
 

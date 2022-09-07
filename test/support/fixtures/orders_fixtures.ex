@@ -13,7 +13,7 @@ defmodule Estore.OrdersFixtures do
       |> Enum.into(%{
         total_price: "120.5"
       })
-      |> Estore.Orders.create_order()
+      |> Estore.Orders.complete_order()
 
     order
   end

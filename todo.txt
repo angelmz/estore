@@ -18,3 +18,44 @@ and {"input"=>variable} seems to be the best way to handle raw data.
 Book a room ASAP
 
 # Create or get images. Let's go with just create for now
+
+
+
+
+
+# Command
+
+# Query
+
+
+Accounts Context
+
+C-Depoist Money
+Q-Account Opened
+Q-Money Deposited
+
+C-Withdraw Money
+Q-Money Withdrawn
+
+C-Send Money to Account
+Q-Money Send to Account
+
+Acounting
+Journal Entry Created
+
+Inventory Context
+Create Product
+Product Created
+
+Orders Context
+
+Shopping Cart Context
+Add item to shopping Cart
+Item added to shopping Cart
+
+Check out
+Items Checkout
+Items removed from Cart
+Order is started?
+# This seems to really only be useful for real time applications. Distributed state. 
+# Replace transactions with this since it's already ensuring. 

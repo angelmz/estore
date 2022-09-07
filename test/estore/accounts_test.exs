@@ -31,7 +31,7 @@ defmodule Estore.AccountsTest do
       %{id: id} = user = user_fixture()
 
       assert %User{id: ^id} =
-               Accounts.get_user_by_email_and_password(user.email, valid_user_password())
+               Accounts.get_user_by_email_and_password(user.email, valid_password())
     end
   end
 
@@ -86,8 +86,10 @@ defmodule Estore.AccountsTest do
 
     test "registers users with a hashed password" do
       email = unique_user_email()
-      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
+      role_id = user_role()
+      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email, role_id: role_id))
       assert user.email == email
+      assert user.role_id == role_id
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
@@ -102,7 +104,7 @@ defmodule Estore.AccountsTest do
 
     test "allows fields to be set" do
       email = unique_user_email()
-      password = valid_user_password()
+      password = valid_password()
 
       changeset =
         Accounts.change_user_registration(
@@ -130,13 +132,13 @@ defmodule Estore.AccountsTest do
     end
 
     test "requires email to change", %{user: user} do
-      {:error, changeset} = Accounts.apply_user_email(user, valid_user_password(), %{})
+      {:error, changeset} = Accounts.apply_user_email(user, valid_password(), %{})
       assert %{email: ["did not change"]} = errors_on(changeset)
     end
 
     test "validates email", %{user: user} do
       {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: "not valid"})
+        Accounts.apply_user_email(user, valid_password(), %{email: "not valid"})
 
       assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
     end
@@ -145,7 +147,7 @@ defmodule Estore.AccountsTest do
       too_long = String.duplicate("db", 100)
 
       {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: too_long})
+        Accounts.apply_user_email(user, valid_password(), %{email: too_long})
 
       assert "should be at most 160 character(s)" in errors_on(changeset).email
     end
@@ -154,7 +156,7 @@ defmodule Estore.AccountsTest do
       %{email: email} = user_fixture()
 
       {:error, changeset} =
-        Accounts.apply_user_email(user, valid_user_password(), %{email: email})
+        Accounts.apply_user_email(user, valid_password(), %{email: email})
 
       assert "has already been taken" in errors_on(changeset).email
     end
@@ -168,7 +170,7 @@ defmodule Estore.AccountsTest do
 
     test "applies the email without persisting it", %{user: user} do
       email = unique_user_email()
-      {:ok, user} = Accounts.apply_user_email(user, valid_user_password(), %{email: email})
+      {:ok, user} = Accounts.apply_user_email(user, valid_password(), %{email: email})
       assert user.email == email
       assert Accounts.get_user!(user.id).email != email
     end
@@ -261,7 +263,7 @@ defmodule Estore.AccountsTest do
 
     test "validates password", %{user: user} do
       {:error, changeset} =
-        Accounts.update_user_password(user, valid_user_password(), %{
+        Accounts.update_user_password(user, valid_password(), %{
           password: "not valid",
           password_confirmation: "another"
         })
@@ -276,21 +278,21 @@ defmodule Estore.AccountsTest do
       too_long = String.duplicate("db", 100)
 
       {:error, changeset} =
-        Accounts.update_user_password(user, valid_user_password(), %{password: too_long})
+        Accounts.update_user_password(user, valid_password(), %{password: too_long})
 
       assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
     test "validates current password", %{user: user} do
       {:error, changeset} =
-        Accounts.update_user_password(user, "invalid", %{password: valid_user_password()})
+        Accounts.update_user_password(user, "invalid", %{password: valid_password()})
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
     test "updates the password", %{user: user} do
       {:ok, user} =
-        Accounts.update_user_password(user, valid_user_password(), %{
+        Accounts.update_user_password(user, valid_password(), %{
           password: "new valid password"
         })
 
@@ -302,7 +304,7 @@ defmodule Estore.AccountsTest do
       _ = Accounts.generate_user_session_token(user)
 
       {:ok, _} =
-        Accounts.update_user_password(user, valid_user_password(), %{
+        Accounts.update_user_password(user, valid_password(), %{
           password: "new valid password"
         })
 
