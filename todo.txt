@@ -15,9 +15,74 @@ put_assoc vs build_assoc vs cast_assoc
 The Ecto book had a weird way of updating records
 and {"input"=>variable} seems to be the best way to handle raw data.
 
-Book a room ASAP
+# Need to remove phoenix gen auth and go with a general one? No, need to be able to come
+## back to old seller accounts to add and remove items. 
+# Features to be added
+# Search
+# Admin abilities. 
+# Frontend. LiveView or React App? (Not Next.Js. is like ROR right? Google Phoenix and Next.js)
 
 # Create or get images. Let's go with just create for now
+
+
+
+Estore
+ # 500 kb > S3
+
++ Only show new items in search. Only show used items in product page on clicking “Other Sellers”
++ What if there isn’t an option for said size in refurbished? Another seller would get it? They already have to compete in price
+
++ Customers have to know that what they're getting is refurbished. Only include pictures if you want to make a refurbished section.
+
+# Use GenServers at minimum? Don't worry about performance. Just build.
+Completed Project
+
+Seller
+1. Create Seller, User, Admin tables with their own fields (reviews, items)
+2. A Seller should be able to create items one or multiple at a time manually or by uploading a csv.
+2a. Those items should be able to contain new images and filter out previously stored images or duplicates.
+- Create 1 item. Create x items. Update 1 item. Update 1 item. Deleate too.
+
+# Start simple. Insteada worring about recommended on orders page, build the orders page first.
+User
+A user should be able to 
+1. search for items
+2. Browse through searched iteams
+3. Optionally select a used item
+4. Add items to a cart, checkout, and revceive and order number
+5. A user should be able to see their past orders.
+6. A user should get recmommendations, on their home page and when they've completed an order
+
+Should pass
+1. GeneralTools.Search.search_for_item("Legors")
+# Should return legos. Worry about optimization, like spelling and mv later
+1a. {:ok, [{item},{item},{item}]}
+2. ShoppingCart.Cart.add_item_to_cart()
+3. Orders.Order.complete_order #Checkout
+4. Orders.Order.get_all_orders()
+
+
+
+Frontend
+1. A React app requests and sends JSON.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

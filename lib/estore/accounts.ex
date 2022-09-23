@@ -147,6 +147,9 @@ defmodule Estore.Accounts do
     %Role{}
     |> Role.changeset(attrs)
     |> Repo.insert()
+
+    # Kafka |> To be inserted into multiple DBs.
+    # Need to give access to estore DB in piper app
   end
 
   @doc """
