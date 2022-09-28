@@ -153,9 +153,71 @@ products = [
 
 # Tip: Don't worry about how user, tags, or images, fields will be filled out. That's controller/frontend issues. Just make sure the data gets to the proper tables.
 
+seller = Accounts.get_user_by_email("seller@seller.com")
+
 for product <- products do
-  {:ok, _} = Inventory.complete_product(product)
+  {:ok, _} = Inventory.create_product(seller, product)
 end
+
+
+####################
+###IEX###
+####################
+Accounts.create_role(%{title: "seller"})
+seth = %{
+  full_name: "Seth Horsley",
+  email: "seller@seller.com",
+  role_id: 1,
+  password: "Hello world1!",
+  hashed_password: "$2b$12$Co5v5xpCAnFkBZDweag26.audmms4H2aO3rnDXdkgu8GBxwYcD8B2",
+}
+product1 = %{
+  handle: "mens-fall-jacket",
+  title: "Men's Fall Jacket",
+  sku: 100000000000,
+  body: "Men's Fall Fashion Jacket ",
+  vendor: "stylegucci",
+  category: "apperal",
+  published: true,
+  size: "small",
+  color: "red",
+  condition: "new",
+  inventory_qty: 5,
+  price: Decimal.new("19.99"),
+  compare_at_price: Decimal.new("39.99"),
+  subcategory_ids: [1],
+  tags: [
+    %{
+      title: "fall",
+
+    },
+    %{
+      title: "gucci",
+    },
+  ],
+  images: [
+    %{
+      image_src: "https://burst.shopifycdn.com/photos/mens-fall-fashion-jacket.jpg?width=925&exif=1&iptc=1/1",
+      image_position: 1,
+      image_alt_text: "Mens Fall Fashion Jacket",
+    },
+    %{
+      image_src: "https://facebook.com",
+      image_position: 2,
+      image_alt_text: "The Jacket",
+    }
+  ],
+}
+
+Inventory.create_subcategory(%{title: "Men's Clothing"})
+
+{:ok, seller} = Accounts.register_user(seth)
+
+get_seller = Accounts.get_user_by_email("seller@seller.com")
+
+product1 = Inventory.create_product(get_seller, product1)
+
+
 
 # # %Product{
 # #   handle: "chain-bracelet",

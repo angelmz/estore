@@ -21,6 +21,17 @@ defmodule Estore.ShoppingCart do
       )
     )
   end
+
+  # def get_images_by_product_id_insert_intouser do
+  #   Repo.get_by!()
+  #   from(i in I
+
+  #   )
+  #   {:ok, product} -> {:ok, Repo.insert(images_by_product_id |> id)}
+  # end
+
+
+
   # Tip: When structs are in parameters instead of attrs, it means use their get function.
   # def add_item_to_cart(%Cart{} = cart, %Inventory.Product{} = product) do
 
@@ -65,6 +76,10 @@ defmodule Estore.ShoppingCart do
       conflict_target: [:cart_id, :product_id]
     )
   end
+
+
+
+
 
   def remove_item_from_cart(%Cart{} = cart, product_id) do
     {1, _} =

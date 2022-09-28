@@ -7,7 +7,6 @@ defmodule Estore.Inventory do
   alias Estore.Repo
 
   alias Estore.Inventory.{Product, Subcategory, Tag, Image, Review}
-  alias Estore.Accounts
 
   def list_products do
     Product |> Repo.all |> Repo.preload([:subcategories, :tags])
@@ -16,11 +15,42 @@ defmodule Estore.Inventory do
   # change ids to attrs
   def get_product!(id) do
     Product |> Repo.get(id) |> Repo.preload([:subcategories, :tags])
+
   end
 
-  def create_product(attrs \\ %{}) do
+  def create_product(seller, attrs \\ %{}) do
+    # tags = attrs[:tags]
+    # images = attrs[:images]
+
+
+    # for tag <- tags do
+    #   {:ok, _} = Estore.Inventory.create_tag(seller, tag)
+    # end
+
+    # for image <- images do
+    #   {:ok, _} = Estore.Inventory.create_image(seller, image)
+    # end
+
+    # To hit both users and products. You first create them, then grab them
+    # grabed_images = images_by_user_id()
+    # |> Ecto.Changeset.put_assoc(:images, grabbed_user_images)
+
+
+    # %Product{}
+    # |> Product.changeset(attrs)
+    # |> Ecto.Changeset.put_assoc(:user, seller)
+    # |> Ecto.Changeset.put_assoc(:tags, tags)
+    # |> Ecto.Changeset.put_assoc(:images, images)
+    # |> Repo.insert()
+
+
     %Product{}
-    |> change_product(attrs)
+    |> Product.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, seller)
+    # |> Ecto.Changeset.cast(attrs, [])
+    |> Ecto.Changeset.cast_assoc(:tags, with: &Tag.changeset/2)
+    |> Ecto.Changeset.cast_assoc(:images, with: &Image.changeset/2)
+    # |> IO.inspect()
     |> Repo.insert()
   end
 
@@ -43,44 +73,39 @@ defmodule Estore.Inventory do
       %Ecto.Changeset{data: %Product{}}
 
   """
-  def change_product(%Product{} = product, attrs \\ %{}) do
-    subcategories = list_subcategories_by_id(attrs[:subcategory_ids])
-    user = Accounts.get_user!(attrs[:user_id])
-    # tags = attrs[:tags] # [%{title}]
-    # images = attrs[:images]
-
-
-    # create_tag(tags)
-    # return images and Map.or enum.put user_id into from user variable
-
-    product
-    |> Repo.preload([:subcategories])
-    |> Product.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:subcategories, subcategories)
-    |> Ecto.Changeset.put_assoc(:user, user)
-
-    # |> Ecto.Changeset.put_assoc(:tags, tags)
-    # |> Ecto.Changeset.put_assoc(:images, images)
-  end
-
-  def complete_product(attrs \\ %{}) do
-    complete_product = create_product(attrs)
+  def change_product(seller, attrs \\ %{}) do
 
     tags =
-      Enum.map(complete_product.tags, fn tag ->
-        %{title: tag.title, complete_product_id: complete_product.id, user_id: complete_product.user_id}
+      Enum.map(attrs.tags, fn tag ->
+        %{title: tag.title}
+        |> Tag.changeset()
       end)
 
+    # tags = [%Tags{},%Tags{}]
+  #1.
     images =
-      Enum.map(complete_product.images, fn image ->
-        %{title: image.title, complete_product_id: complete_product.id, user_id: complete_product.user_id}
+      Enum.map(attrs.images, fn image ->
+        %{image_src: image.title, image_poistion: image.position, image_alt_text: image.image_alt_text}
+        |> Image.changeset()
       end)
+    #2. images should equal {%Image{}, %Image{}, etc.}
+    #3. insert them or hope that they get inserted when the prdouct is created.
+    # Images = Inventory.get_image_cluster([]) // Similar to get all images, but within a range
 
-    complete_product
-    |>Ecto.Changeset.put_assoc(:tags, [tags])
-    |>Ecto.Changeset.put_assoc(:images, [images])
+    # Inventory.create_tags
+
+    %Product{}
     |> Product.changeset(attrs)
-    |>Repo.insert()
+
+    |> Ecto.Changeset.put_assoc(:user, seller)
+    |> Ecto.Changeset.put_assoc(:tags, [tags])
+    |> Ecto.Changeset.put_assoc(:images, [images])
+
+    |> Repo.insert()
+    # |> case do
+    #   {:ok, cart} -> {:ok, continue}
+    #   {:error, changeset} -> {:error, exit_function_here() and have a screen for retry. }
+    # end
   end
 
 
@@ -160,15 +185,12 @@ defmodule Estore.Inventory do
 
   """
 
-  # create_tag(product = %Product{}, ){
-  #   product_id = product.id
-  #   user_id = product_user.id
-  # }
-  # def create_tag(%Product{} = product) do
-  #   %Tag{}
-  #   |> Tag.changeset(attrs)
-  #   |> Repo.insert()
-  # end
+  def create_tag(seller, attrs \\ %{}) do
+    %Tag{}
+    |> Tag.changeset(attrs)
+    # |> Ecto.Changeset.put_assoc(:user, seller)
+    |> Repo.insert()
+  end
 
   def update_tag(%Tag{} = tag, attrs) do
     tag
@@ -190,9 +212,15 @@ defmodule Estore.Inventory do
 
   def get_image!(id), do: Repo.get!(Image, id)
 
-  def create_image(attrs \\ %{}) do
+  # def get_image_by_seller_id!(seller) do
+  #   Repo.get!(Image, id)
+  # end
+
+
+  def create_image(seller, attrs \\ %{}) do
     %Image{}
     |> Image.changeset(attrs)
+    # |> Ecto.Changeset.put_assoc(:user, seller)
     |> Repo.insert()
   end
 
