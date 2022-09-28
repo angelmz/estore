@@ -57,6 +57,8 @@
   <%= number_input f, :compare_at_price, step: "any" %>
   <%= error_tag f, :compare_at_price %>
 
+  <%= subcategory_select f, @changeset %>
+
   <div>
     <%= submit "Save" %>
   </div>

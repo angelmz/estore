@@ -36,8 +36,15 @@ defmodule Estore.Accounts.User do
   def registration_changeset(user, attrs, opts \\ []) do
     user
     |> cast(attrs, [:full_name, :email, :password])
+    |> validate_full_name()
     |> validate_email()
     |> validate_password(opts)
+  end
+
+  defp validate_full_name(changeset) do
+    changeset
+    |> validate_required([:full_name])
+    |> validate_length(:full_name, min: 1, max: 100)
   end
 
   defp validate_email(changeset) do
@@ -74,6 +81,16 @@ defmodule Estore.Accounts.User do
     end
   end
 
+  def full_name_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:full_name])
+    |> validate_full_name()
+    |> case do
+      %{changes: %{full_name: _}} = changeset -> changeset
+      %{} = changeset -> add_error(changeset, :full_name, "did not change")
+    end
+  end
+
   @doc """
   A user changeset for changing the email.
 
@@ -88,6 +105,7 @@ defmodule Estore.Accounts.User do
       %{} = changeset -> add_error(changeset, :email, "did not change")
     end
   end
+
 
   @doc """
   A user changeset for changing the password.

@@ -86,8 +86,8 @@ defmodule H do
     {:ok, seller} = Accounts.register_user(seth)
     {:ok, customer1} = Accounts.register_user(danica)
 
-    {:ok, product} = Inventory.create_product(seller, mens_jacket)
-    {:ok, cart} = ShoppingCart.create_cart(customer1)
+    {:ok, product} = Inventory.create_product(seller.id, mens_jacket)
+    {:ok, cart} = ShoppingCart.create_cart(customer1.id)
     ShoppingCart.add_item_to_cart(cart, product)
     cart = ShoppingCart.get_cart_by_user_id(2)
     {:ok, order} = Orders.complete_order(cart)
@@ -173,12 +173,22 @@ defmodule H do
 
     ######### Acceptance test #########
     seller = Accounts.get_user_by_email("seller@seller.com")
-    {:ok, product} = Inventory.create_product(seller, mens_jacket)
+    {:ok, product} = Inventory.create_product(seller.id, mens_jacket)
     customer1 = Accounts.get_user_by_email("danica@user.com")
-    {:ok, cart} = ShoppingCart.create_cart(customer1)
+    {:ok, cart} = ShoppingCart.create_cart(customer1.id)
     ShoppingCart.add_item_to_cart(cart, product)
     cart = ShoppingCart.get_cart_by_user_id(2)
     {:ok, order} = Orders.complete_order(cart)
     ######### Acceptance test #########
+
+
+    ###########iex new function###############
+    # registering
+    {:ok, user} = Accounts.register_user(user_params)
+    UserAuth.log_in_user(user) # needs conn
+    # loging in
+    user = Accounts.get_user_by_email_and_password(email, password)
+    UserAuth.log_in_user(conn, user, user_params)
+    ###########iex new function###############
   end
 end

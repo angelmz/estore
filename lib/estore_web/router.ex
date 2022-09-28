@@ -2,6 +2,7 @@ defmodule EstoreWeb.Router do
   use EstoreWeb, :router
 
   import EstoreWeb.UserAuth
+  import EstoreWeb.CartController
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -50,6 +51,7 @@ defmodule EstoreWeb.Router do
     end
   end
 
+
   # Enables the Swoosh mailbox preview in development.
   #
   # Note that preview only shows emails that were sent by the same
@@ -78,11 +80,19 @@ defmodule EstoreWeb.Router do
   end
 
   scope "/", EstoreWeb do
-    pipe_through [:browser, :require_authenticated_user]
+    pipe_through [:browser, :require_authenticated_user, :fetch_current_cart]
+
+    resources "/cart_items", CartItemController, only: [:create, :delete]
+
+    get "/cart", CartController, :show
+    put "/cart", CartController, :update
+
+    resources "/orders", OrderController, only: [:create, :show]
 
     get "/users/settings", UserSettingsController, :edit
     put "/users/settings", UserSettingsController, :update
     get "/users/settings/confirm_email/:token", UserSettingsController, :confirm_email
+
   end
 
   scope "/", EstoreWeb do

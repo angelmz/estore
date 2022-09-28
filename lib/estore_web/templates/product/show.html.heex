@@ -67,6 +67,19 @@
     <%= @product.compare_at_price %>
   </li>
 
+  <li>
+    <strong>Subcategories:</strong>
+    <%= for subcat <- @product.subcategories do %>
+      <%= subcat.title %>
+      <br>
+    <% end %>
+  </li>
+
+<h1>Show Product</h1>
+
+ <%= link "Add to cart",
+   to: Routes.cart_item_path(@conn, :create, product_id: @product.id),
+   method: :post %>
 </ul>
 
 <span><%= link "Edit", to: Routes.product_path(@conn, :edit, @product) %></span> |

@@ -31,14 +31,12 @@ defmodule Estore.ShoppingCart do
   # end
 
 
-
   # Tip: When structs are in parameters instead of attrs, it means use their get function.
   # def add_item_to_cart(%Cart{} = cart, %Inventory.Product{} = product) do
 
-  def create_cart(%Accounts.User{} = user) do
-    %Cart{}
+  def create_cart(user_id) do
+    %Cart{user_id: user_id}
     |> Cart.changeset(%{})
-    |> Ecto.Changeset.put_assoc(:user, user)
     |> Repo.insert()
     |> case do
       {:ok, cart} -> {:ok, reload_cart(cart)}
@@ -134,9 +132,9 @@ defmodule Estore.ShoppingCart do
 #       %Ecto.Changeset{data: %Cart{}}
 
 #   """
-#   def change_cart(%Cart{} = cart, attrs \\ %{}) do
-#     Cart.changeset(cart, attrs)
-#   end
+  def change_cart(%Cart{} = cart, attrs \\ %{}) do
+    Cart.changeset(cart, attrs)
+  end
 
 #   @doc """
 #   Returns the list of cart_items.
@@ -227,8 +225,8 @@ defmodule Estore.ShoppingCart do
 #       iex> change_cart_item(cart_item)
 #       %Ecto.Changeset{data: %CartItem{}}
 
-#   """
-#   def change_cart_item(%CartItem{} = cart_item, attrs \\ %{}) do
-#     CartItem.changeset(cart_item, attrs)
-#   end
+# #   """
+  def change_cart_item(%CartItem{} = cart_item, attrs \\ %{}) do
+    CartItem.changeset(cart_item, attrs)
+  end
 end
