@@ -45,53 +45,6 @@ defmodule Estore.Orders do
   end
 
 
-
-  # def update_order(%Order{} = order, attrs) do
-  #   order
-  #   |> Order.changeset(attrs)
-  #   |> Repo.update()
-  # end
-
-  # def delete_order(%Order{} = order) do
-  #   Repo.delete(order)
-  # end
-
-  # def change_order(%Order{} = order, attrs \\ %{}) do
-  #   Order.changeset(order, attrs)
-  # end
-
-  # Line Items
-  # Line Items
-  # Line Items
-  # Line Items
-  # Line Items
-
-  # def list_order_line_items do
-  #   Repo.all(LineItem)
-  # end
-
-  # def get_line_item!(id), do: Repo.get!(LineItem, id)
-
-  # def create_line_item(attrs \\ %{}) do
-  #   %LineItem{}
-  #   |> LineItem.changeset(attrs)
-  #   |> Repo.insert()
-  # end
-
-  # def update_line_item(%LineItem{} = line_item, attrs) do
-  #   line_item
-  #   |> LineItem.changeset(attrs)
-  #   |> Repo.update()
-  # end
-
-  # def delete_line_item(%LineItem{} = line_item) do
-  #   Repo.delete(line_item)
-  # end
-
-  # def change_line_item(%LineItem{} = line_item, attrs \\ %{}) do
-  #   LineItem.changeset(line_item, attrs)
-  # end
-
   @doc """
   Updates a order.
 

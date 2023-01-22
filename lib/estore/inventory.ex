@@ -18,38 +18,10 @@ defmodule Estore.Inventory do
   end
 
   def create_product(seller_id, attrs \\ %{}) do
-    # tags = attrs[:tags]
-    # images = attrs[:images]
-
-
-    # for tag <- tags do
-    #   {:ok, _} = Estore.Inventory.create_tag(seller, tag)
-    # end
-
-    # for image <- images do
-    #   {:ok, _} = Estore.Inventory.create_image(seller, image)
-    # end
-
-    # To hit both users and products. You first create them, then grab them
-    # grabed_images = images_by_user_id()
-    # |> Ecto.Changeset.put_assoc(:images, grabbed_user_images)
-
-
-    # %Product{}
-    # |> Product.changeset(attrs)
-    # |> Ecto.Changeset.put_assoc(:user, seller)
-    # |> Ecto.Changeset.put_assoc(:tags, tags)
-    # |> Ecto.Changeset.put_assoc(:images, images)
-    # |> Repo.insert()
-
-
     %Product{user_id: seller_id}
-    # |> Product.changeset(attrs)
     |> change_product(attrs)
-    # |> Ecto.Changeset.cast(attrs, [])
     |> Ecto.Changeset.cast_assoc(:tags, with: &Tag.changeset/2)
     |> Ecto.Changeset.cast_assoc(:images, with: &Image.changeset/2)
-    # |> IO.inspect()
     |> Repo.insert()
   end
 
@@ -79,54 +51,7 @@ defmodule Estore.Inventory do
     |> Repo.preload(:subcategories)
     |> Product.changeset(attrs)
     |> Ecto.Changeset.put_assoc(:subcategories, subcategories)
-
-    # tags =
-    #   Enum.map(attrs.tags, fn tag ->
-    #     %{title: tag.title}
-    #     |> Tag.changeset()
-    #   end)
-
-    # tags = [%Tags{},%Tags{}]
-  #1.
-    # images =
-    #   Enum.map(attrs.images, fn image ->
-    #     %{image_src: image.title, image_poistion: image.position, image_alt_text: image.image_alt_text}
-    #     |> Image.changeset()
-    #   end)
-    #2. images should equal {%Image{}, %Image{}, etc.}
-    #3. insert them or hope that they get inserted when the prdouct is created.
-    # Images = Inventory.get_image_cluster([]) // Similar to get all images, but within a range
-
-    # Inventory.create_tags
-
-    # %Product{}
-    # |> Product.changeset(attrs)
-
-    # |> Ecto.Changeset.put_assoc(:user, seller)
-    # |> Ecto.Changeset.put_assoc(:tags, [tags])
-    # |> Ecto.Changeset.put_assoc(:images, [images])
-
-    # |> Repo.insert()
-    # |> case do
-    #   {:ok, cart} -> {:ok, continue}
-    #   {:error, changeset} -> {:error, exit_function_here() and have a screen for retry. }
-    # end
   end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ###
