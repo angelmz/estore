@@ -9,7 +9,7 @@ config :bcrypt_elixir, :log_rounds, 1
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
 config :estore, Estore.Repo,
-  username: "angel",
+  username: "villanelle",
   password: "",
   hostname: "localhost",
   database: "estore1_test#{System.get_env("MIX_TEST_PARTITION")}",

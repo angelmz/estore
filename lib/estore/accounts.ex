@@ -90,7 +90,7 @@ defmodule Estore.Accounts do
 
   """
   def change_user_registration(%User{} = user, attrs \\ %{}) do
-    role = get_role!(attrs[:role_id])
+    role = get_role!(attrs["role_id"])
     # If it had been multiple roles, we would've preloaded them instead of getting them one by one.
     # User.registration_changeset(user, attrs, hash_password: false)
     user

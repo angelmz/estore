@@ -21,6 +21,6 @@ defmodule Estore.Repo.Migrations.CreateProducts do
       timestamps()
     end
 
-    create unique_index(:products, [:user_id])
+    create unique_index(:products, :sku)
   end
 end
